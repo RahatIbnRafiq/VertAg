@@ -1,4 +1,12 @@
 import streamlit as st
+import auth  # Import authentication logic
+import dashboard  # Import dashboard logic
 
-st.title("Farm Monitoring System")
-st.write("This is a simple proof-of-concept Streamlit app.")
+# Check authentication
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    auth.login()
+else:
+    dashboard.show_dashboard()

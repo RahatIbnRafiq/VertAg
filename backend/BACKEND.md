@@ -5,3 +5,7 @@ This is currently meant as just a place to store and keep up to date
 
 - will be updated in future
 - errors to be expected in this environment
+
+### TODO
+
+- Write requirements file

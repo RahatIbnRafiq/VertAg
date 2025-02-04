@@ -3,7 +3,8 @@ import streamlit as st
 USER_CREDENTIALS = {
     "admin": "password123",
     "farmer1": "farmer1",
-    "farmer2": "farmer2"
+    "farmer2": "farmer2",
+    "rahat":"rahat"
 }
 
 def authenticate(username, password):

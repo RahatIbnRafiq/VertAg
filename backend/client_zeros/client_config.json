@@ -1,0 +1,22 @@
+{
+    "cameraId": "zero_1",
+    "mqtt": {
+      "broker": "192.168.4.101",
+      "port": 1883,
+      "username": "pi",
+      "password": "secure123",
+      "topics": {
+        "personalCommand": "cameras/+/command",
+        "globalCommand": "cameras/global/command",
+        "response": "cameras/{cameraId}/response",
+        "error": "cameras/error"
+      }
+    },
+    "cameraSettings": {
+      "resolution": {
+        "width": 1280,
+        "height": 720
+      },
+      "timeout": 2
+    } 
+}

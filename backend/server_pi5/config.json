@@ -1,0 +1,33 @@
+{
+    "mqtt": {
+      "broker": "localhost",
+      "port": 1883,
+      "username": "pi",
+      "password": "secure123",
+      "topics": {
+        "globalCommand": "cameras/global/command",
+        "personalCommand": "cameras/+/command",
+        "response": "cameras/+/response"
+      }
+    },
+    "idText": {
+      "fontSize": 20,
+      "fontColor": [255, 255, 255],
+      "position": [10, 10],
+      "fontPath": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    },
+    "timestampText": {
+        "fontSize": 20,
+        "fontColor": [255, 255, 255],
+        "position": [10, 40],
+        "fontPath": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    },
+    "classificationText": {
+        "fontSize": 20,
+        "fontColor": [255, 255, 255],
+        "position": [10, 70],
+        "fontPath": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    },
+    "pi_user_name": "VertAg",
+    "savePath": "/home/{pi_name}/photos"
+}

@@ -82,7 +82,7 @@ def health_shelves_table(df):
         with col1:
             if st.button(f"📋 Shelf {row['shelf_id']}", key=f"shelf_{row['shelf_id']}"):
                 st.session_state["selected_shelf"] = row["shelf_id"]
-                st.switch_page("shelf_detail.py")
+                st.rerun()
         col2.metric(constants.HEALTH_METRIC_LABEL, f"{row['health_percentage']:.1f}")
         with col3:
             generate_mini_trend(row["shelf_id"], df)

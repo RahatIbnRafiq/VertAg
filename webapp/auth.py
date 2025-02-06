@@ -22,7 +22,7 @@ def login():
             st.session_state["authenticated"] = True
             st.session_state["username"] = username
             st.success("Login successful! Redirecting...")
-            st.experimental_rerun()  # Refresh the page to reflect authentication state
+            st.rerun()
         else:
             st.error("Invalid username or password")
 
@@ -35,4 +35,4 @@ def require_authentication():
     if "authenticated" not in st.session_state or not st.session_state["authenticated"]:
         st.warning("Please log in to continue.")
         login()
-        st.stop()  # Stop further execution if not authenticated
+        st.stop()

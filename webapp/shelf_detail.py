@@ -3,6 +3,16 @@ import constants
 import auth
 import os
 import pandas as pd
+from datetime import datetime
+
+
+def extract_date_from_filename(filename):
+    try:
+        date_part = filename.split("_")[0]
+        return datetime.strptime(date_part, "%d.%m.%Y")
+    except ValueError:
+        return datetime.min
+
 
 
 # Load health data
@@ -32,8 +42,6 @@ def show_shelf_details():
         del st.session_state["selected_shelf"]
         st.rerun()
 
-    
-    st.text(constants.BASE_DIR)
     shelf_image_path = os.path.join(constants.BASE_DIR, "data", "images", f"shelf_{shelf_id}")
     if not os.path.exists(shelf_image_path):
         st.warning(f"No images found for Shelf {shelf_id}.")
@@ -49,7 +57,9 @@ def show_shelf_details():
         st.subheader(f"📷 Camera {camera_id}")
 
         camera_path = os.path.join(shelf_image_path, camera_id)
-        images = sorted(os.listdir(camera_path), reverse=True)
+        images = [img for img in os.listdir(camera_path) if img.lower().endswith((".jpg", ".jpeg", ".png"))]
+        images = sorted(images, key=extract_date_from_filename, reverse=True)
+
 
         if not images:
             st.warning(f"No images available for Camera {camera_id}.")
@@ -57,8 +67,9 @@ def show_shelf_details():
         
         
         with st.container():
-            cols = st.columns(len(images))
+            cols = st.columns(len(images))  # Create a column per image
             for idx, img_file in enumerate(images):
+                
                 img_path = os.path.join(camera_path, img_file)
                 with cols[idx]:
-                    st.image(img_path, width=100, caption=img_file.split("-")[0])
+                    st.image(img_path, width=100, caption=img_file.split("_")[0])

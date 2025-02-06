@@ -1,4 +1,8 @@
-# constants.py
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = BASE_DIR + "/data/health_data.csv"
 
 # Titles
 APP_TITLE = "Farm Monitoring Dashboard"
@@ -20,9 +24,4 @@ HOVER_TABLE_STYLE = """
     .stDataFrame { border-radius: 10px; }
 </style>
 """
-
-
-
-# data
-DATA_PATH = "/Users/rahatibnrafiq/startups/vertical farming ai/VertAg/webapp/data/health_data.csv"
 

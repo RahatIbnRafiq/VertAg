@@ -4,6 +4,8 @@ import auth
 import os
 import pandas as pd
 from datetime import datetime
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def extract_date_from_filename(filename):
@@ -54,7 +56,7 @@ def show_shelf_details():
     
     
     for camera_id in cameras:
-        st.subheader(f"📷 Camera {camera_id}")
+        st.subheader(f"📷 For {camera_id}")
 
         camera_path = os.path.join(shelf_image_path, camera_id)
         images = [img for img in os.listdir(camera_path) if img.lower().endswith((".jpg", ".jpeg", ".png"))]
@@ -73,3 +75,20 @@ def show_shelf_details():
                 img_path = os.path.join(camera_path, img_file)
                 with cols[idx]:
                     st.image(img_path, width=100, caption=img_file.split("_")[0])
+        
+        
+        
+        # 📌 Display health trend for this camera (last 7 days)
+        st.subheader(f"📊 Health Trend - Camera {camera_id}")
+        camera_data = df[(df["shelf_id"] == shelf_id)].sort_values("date").tail(7)
+        if not camera_data.empty:
+            fig, ax = plt.subplots(figsize=(5, 0.4))
+            sns.lineplot(data=camera_data, x="date", y="health_percentage", ax=ax, marker="o", color="blue", linewidth=1)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            ax.spines["left"].set_visible(False)
+            ax.spines["bottom"].set_visible(False)
+            ax.grid(False)
+            st.pyplot(fig)

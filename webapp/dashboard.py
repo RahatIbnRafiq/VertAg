@@ -57,27 +57,17 @@ def health_trend_plot_shelves(df):
     ax.set_ylabel("Health Percentage", fontsize=12)
     ax.legend(title="Shelf ID")
     ax.grid(True)
-
-    # Show the plot in Streamlit
     st.pyplot(fig)
-
-
 
 def health_shelves_table(df):
     st.subheader(constants.SHELF_OVERVIEW_TITLE)
-
-    # Get the most recent health data for each shelf
     latest_date = df["date"].max()
-    latest_shelf_data = df[df["date"] == latest_date][["shelf_id", "health_percentage"]]
-
-
+    shelf_health_data = df[df["date"] == latest_date].groupby("shelf_id", as_index=False)["health_percentage"].mean()
 
     import streamlit.components.v1 as components
-
     st.markdown(constants.HOVER_TABLE_STYLE, unsafe_allow_html=True)
 
-    # Create an interactive table where rows are clickable
-    for _, row in latest_shelf_data.iterrows():
+    for _, row in shelf_health_data.iterrows():
         col1, col2, col3 = st.columns([1, 1, 2])
         with col1:
             if st.button(f"📋 Shelf {row['shelf_id']}", key=f"shelf_{row['shelf_id']}"):
@@ -86,7 +76,6 @@ def health_shelves_table(df):
         col2.metric(constants.HEALTH_METRIC_LABEL, f"{row['health_percentage']:.1f}")
         with col3:
             generate_mini_trend(row["shelf_id"], df)
-
 
 
 def greet_dashboard():

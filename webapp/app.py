@@ -1,6 +1,7 @@
 import streamlit as st
-import auth  # Import authentication logic
-import dashboard  # Import dashboard logic
+import auth
+import dashboard
+import shelf_detail
 
 # Check authentication
 if "authenticated" not in st.session_state:
@@ -8,5 +9,7 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state["authenticated"]:
     auth.login()
+elif "selected_shelf" in st.session_state:
+    shelf_detail.show_shelf_details()
 else:
     dashboard.show_dashboard()

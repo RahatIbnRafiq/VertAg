@@ -1,16 +1,15 @@
 import paho.mqtt.client as mqtt
 import subprocess
 import base64
-import time
 import json
 import os
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
 
-with open("config.json", "r") as f:
+with open("client_config.json", "r") as f:
     config = json.load(f)
 
 CAMERA_ID = config["cameraId"]
+SHELF_ID = config["shelfId"]
 MQTT_BROKER = config["mqtt"]["broker"]
 MQTT_PORT = config["mqtt"]["port"]
 MQTT_USER = config["mqtt"]["username"]
@@ -28,7 +27,7 @@ CAM_TIMEOUT = config["cameraSettings"]["timeout"]
 # -- photo logic --
 def take_and_send_photo(client):
     try:
-        timestamp = int(time.time())
+        timestamp = datetime.now().isoformat()
         image_path = f"/tmp/photo_{CAMERA_ID}_{timestamp}.jpg"
 
         # capture
@@ -54,6 +53,7 @@ def take_and_send_photo(client):
         # publish the payload
         payload = {
             "cameraId": CAMERA_ID,
+            "shelfId": SHELF_ID,
             "timestamp": timestamp,
             "image": encoded_image
         }
@@ -82,9 +82,9 @@ def on_message(client, userdata, msg):
         take_and_send_photo(client)
     elif msg.topic.startswith("cameras/"):
         # Extract camera ID from topic
-        _, camera_id, _ = msg.topic.split('/')
-        if camera_id == CAMERA_ID:
-            print(f"Personal command for {CAMERA_ID} received!")
+        _, shelf_id, camera_id, _ = msg.topic.split('/')
+        if shelf_id == SHELF_ID and camera_id == CAMERA_ID:
+            print(f"Personal command for shelf_{SHELF_ID}:camera_{CAMERA_ID} received!")
             take_and_send_photo(client)
 
 # -- Main --

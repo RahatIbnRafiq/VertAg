@@ -4,8 +4,9 @@ import json
 import os
 from ai_processor import ImageClassifier
 from annotate import Annotate
+from datetime import datetime
 
-with open("config.json", "r") as f:
+with open("server_config.json", "r") as f:
     config = json.load(f)
 
 annotate = Annotate(config=config)
@@ -35,30 +36,35 @@ def on_connect(client, userdata, flags, rc, properties):
 def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload)
-        filename = f"{SAVE_PATH}/{payload['cameraId']}_{payload['timestamp']}.jpg"
+        timestamp = datetime.fromisoformat(payload['timestamp'])
+        current_date = f'{timestamp.month}.{timestamp.day}.{timestamp.year}'
+        
+        os.makedirs(f"{SAVE_PATH}/shelf_{payload['shelfId']}", exist_ok=True)
+        os.makedirs(f"{SAVE_PATH}/shelf_{payload['shelfId']}/camera_{payload['cameraId']}", exist_ok=True)
+        filename = f"{SAVE_PATH}/shelf_{payload['shelfId']}/camera_{payload['cameraId']}/{current_date}_cam-{payload['cameraId']}_shelf-{payload['shelfId']}.jpg"
         
         with open(filename, "wb") as f:
             f.write(base64.b64decode(payload["image"]))
         
         print(f"Saved {filename}")
-        try:
-            img, draw = annotate.open_image(filename=filename)
+        # try:
+        #     img, draw = annotate.open_image(filename=filename)
 
-            classification_result = classifier.classify_image(filename)
-            if classification_result[0]:
-                annotate.annotate_classification(draw, 
-                                                classification_name=classification_result[0][0]["label"], 
-                                                classification_percentage=classification_result[0][0]["confidence"])
-            else:
-                annotate.annotate_classification(draw, 
-                                                classification_name="None", 
-                                                classification_percentage="0.00")
-            annotate.annotate_id(draw, payload['cameraId'])
-            annotate.annotate_timestamp(draw)
-            annotate.save_and_close_image(img)
+        #     classification_result = classifier.classify_image(filename)
+        #     if classification_result[0]:
+        #         annotate.annotate_classification(draw, 
+        #                                         classification_name=classification_result[0][0]["label"], 
+        #                                         classification_percentage=classification_result[0][0]["confidence"])
+        #     else:
+        #         annotate.annotate_classification(draw, 
+        #                                         classification_name="None", 
+        #                                         classification_percentage="0.00")
+        #     annotate.annotate_id(draw, payload['cameraId'])
+        #     annotate.annotate_timestamp(draw)
+        #     annotate.save_and_close_image(img)
 
-        except Exception as e:
-            print(f"Annotations failed: {str(e)}")
+        # except Exception as e:
+        #     print(f"Annotations failed: {str(e)}")
             
         return True
 
@@ -82,13 +88,14 @@ while True:
         client.publish(TOPIC_GLOBAL, "capture", qos=1)
         print("Sent global command!")
     elif cmd == "2":
+        shelf_id = input("Shelf ID: ").strip()
         camera_id = input("Camera ID: ").strip()
         # Publish to camera-specific command topic
         client.publish(
-            f"cameras/{camera_id}/command",
+            f"cameras/{shelf_id}/{camera_id}/command",
             "capture",
             qos=1
         )
-        print(f"Sent to {camera_id}!")
+        print(f"Sent to shelf_{shelf_id}:camera_{camera_id}!")
     else:
         print("Invalid command")
